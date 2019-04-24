@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Enter Student ID Check Attendance</legend>
+      <div class="form-group">
+        {{ form.studentID.label(class="form-control-label") }}
+
+        {% if form.studentID.errors %}
+          {{ form.studentID(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.studentID.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.studentID(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.login(class="btn btn-outline-info")}}
+    </div>
+  </form>
+</div>
+{% endblock content %}
