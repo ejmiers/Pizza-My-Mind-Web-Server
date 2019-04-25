@@ -2,8 +2,10 @@ from flask import render_template, url_for, flash, redirect
 from pmm_server import app, db, bcrypt
 from pmm_server.db_models import Student, Administrator, Event, Attendance
 from pmm_server.forms import StudentSignInForm, AdminSignInForm
+from pmm_server.date_models import Date
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
+from datetime import datetime
 
 def login_required(f):
     @wraps(f)
@@ -31,7 +33,16 @@ def attendance():
     if form.validate_on_submit():
         student = Student.query.filter_by(id=form.studentID.data).first()
         if student:
-            return render_template('student-console.html', title='Student Attendance', student=student)
+            date = Date()
+            print(date)
+            attendance = Attendance.query.filter_by(studentID=form.studentID.data).\
+                                          filter_by(semester=date.season).\
+                                          filter_by(year=date.year).all()
+            events = Event.query.filter_by(semester=date.season).\
+                                 filter_by(year=date.year).all()
+            print(attendance)
+            print(events)
+            return render_template('student-console.html', title='Student Attendance', date=date, student=student, attendance=attendance, events=events)
         else:
             flash(f'The user \'{form.studentID.data}\' does not exist.\
                     Please contact your department administrator.', 'danger')

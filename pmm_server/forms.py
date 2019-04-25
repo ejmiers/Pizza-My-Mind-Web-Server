@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Email
 
 class StudentSignInForm(FlaskForm):
     studentID = StringField('Student ID', validators=[DataRequired()])
-    login = SubmitField('Login')
+    login = SubmitField('Check Attendance')
 
 class AdminSignInForm(FlaskForm):
     adminEmail = StringField('Email', validators=[DataRequired(), Email()])

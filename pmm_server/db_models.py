@@ -1,6 +1,7 @@
 from pmm_server import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
+from pmm_server.date_models import Date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -94,23 +95,38 @@ class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column('event_id', db.Integer, primary_key=True, nullable=False)
 
-    fallMonths = [8, 9, 10, 11, 12]
-    springMonths = [1, 2, 3, 4, 5]
-    season = ''
-
-    if (datetime.now().month in fallMonths):
-        season = 'fall'
-    elif (datetime.now().month in springMonths):
-        season = 'spring'
-    else:
-        season = 'summer'
-
-    eventDate = db.Column('event_date', db.String(10), default=datetime.now().strftime("%m_%d_%Y"))
+    date = Date()
+    eventDate = db.Column('event_date', db.String(10), default=date.stringDate)
     eventName = db.Column('event_name', db.String(50), nullable=False)
     attendanceTotal = db.Column('attendance_total', db.Integer, nullable=False, default=0)
     newStudentTotal = db.Column('new_student_total', db.Integer, nullable=False, default=0)
-    semester = db.Column('semester', db.String(6), nullable=False, default=season)
-    year = db.Column('year', db.String(4), nullable=False, default=datetime.now().year)
+    semester = db.Column('semester', db.String(6), nullable=False, default=date.season)
+    year = db.Column('year', db.String(4), nullable=False, default=date.year)
+
+    def __init__(self, eventName, attendanceTotal, newStudentTotal, semester, year):
+        self.eventName = eventName
+        self.attendanceTotal = attendanceTotal
+        self.newStudentTotal = newStudentTotal
+        self.semester = semester
+        self.year = year
+
+    def get_eventDate(self):
+        return self.eventDate
+
+    def get_eventName(self):
+        return self.eventName
+
+    def get_attendanceTotal(self):
+        return self.attendanceTotal
+
+    def get_newStudentTotal(self):
+        return self.newStudentTotal
+
+    def get_semester(self):
+        return self.semester
+
+    def get_year(self):
+        return self.year
 
     def __repr__(self):
         return f"Event('{self.id}', '{self.eventDate}', '{self.eventName}',"\
@@ -119,11 +135,37 @@ class Event(db.Model):
 class Attendance(db.Model):
     __tablename__ = 'attendance'
     id = db.Column('attendance_id', db.Integer, primary_key=True, nullable=False)
+    date = Date()
     eventID = db.Column('event_id', db.Integer, nullable=False)
     studentID = db.Column('student_id', db.String(10), db.ForeignKey('students.student_id'),
                             nullable=False)
     isNew = db.Column('is_new', db.Integer, nullable=False, default=0)
+    semester = db.Column('semester', db.String(6), nullable=False, default=date.season)
+    year = db.Column('year', db.String(4), nullable=False, default=date.year)
+    date = db.Column('date_added', db.String(10), default=date.stringDate)
+
+    def __init__(self, eventID, studentID, isNew, semester, year):
+        self.eventID = eventID
+        self.studentID = studentID
+        self.isNew = isNew
+        self.semester = semester
+        self.year = year
+
+    def get_eventID(self):
+        return self.eventID
+
+    def get_studentID(self):
+        return self.studentID
+
+    def get_isNew(self):
+        return self.isNew
+
+    def get_semester(self):
+        return self.semester
+
+    def get_year(self):
+        return self.year
 
     def __repr__(self):
-        return f"Event('{self.id}', '{self.eventID}', '{self.studentID}',"\
-                        f"'{self.isNew}')"
+        return f"Attendance('{self.id}', '{self.eventID}', '{self.studentID}',"\
+                        f"'{self.isNew}', '{self.semester}', '{self.year}', '{self.date}')"

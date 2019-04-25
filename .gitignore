@@ -1,6 +1,6 @@
 # Folders and  Specific Files
-pmm-server/__pycache__/
-initdb.py
+pmm_server/__pycache__/
+generateTestDB.py
 
 # Specific extensions
 *.db

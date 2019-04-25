@@ -1,4 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h> {{ student.id }} </h>
+  <h1> Welcome {{ student.firstName }}! Here is your {{ date.season }}, {{date.year}} attendance history.</h1>
+  <p></p>
+  <table>
+  <tr>
+    <th>Event Name</th>
+    <th>Date</th>
+  </tr>
+  {% for entry in attendance %}
+    <tr>
+      {% for event in events %}
+        {% if event.id == entry.eventID %}
+          <td>{{ event.eventName }}</td>
+          <td>{{ entry.date }}</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </table>
 {% endblock content %}
