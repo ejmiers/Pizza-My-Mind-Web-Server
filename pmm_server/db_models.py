@@ -7,50 +7,23 @@ from pmm_server.date_models import Date
 def load_user(user_id):
     return Administrator.query.get(user_id)
 
-class Student(db.Model, UserMixin):
+class Student(db.Model):
     __tablename__ = 'students'
     id = db.Column('student_id', db.String(10), primary_key=True, nullable=False)
     firstName = db.Column('first_name', db.String(20), default='new_student')
     lastName = db.Column('last_name', db.String(20), default='new_student')
-    email = db.Column('email', db.String(50), unique=True, default='new_student')
+    email = db.Column('email', db.String(50), default='new_student')
     major = db.Column('major', db.String(30), default='new_student')
     classDescription = db.Column('class_description', db.String(20), default='new_student')
     dateAdded = db.Column('date_added', db.String(10), default=datetime.now().strftime("%m_%d_%Y"))
-    urole = db.Column(db.Integer, default=0)
 
-    #attendanceRecords = db.relationship('attendance', backref='user',lazy=True)
-
-    def __init__(self, id, firstName, lastName, email, major, classDescription):
+    def __init__(self, id, firstName='new_student', lastName='new_student', email='new_student', major='new_student', classDescription='new_student'):
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.major = major
         self.classDescription = classDescription
-
-    def get_id(self):
-        return self.id
-
-    def get_firstName(self):
-        return self.firstName
-
-    def get_lastName(self):
-        return self.lastName
-
-    def get_email(self):
-        return self.email
-
-    def get_major(self):
-        return self.major
-
-    def get_classDescription(self):
-        return self.classDescription
-
-    def get_dateAdded(self):
-        return self.dateAdded
-
-    def get_role(self):
-            return self.urole
 
     def __repr__(self):
         return f"Student('{self.id}', '{self.firstName}', '{self.lastName}',"\
@@ -64,28 +37,12 @@ class Administrator(db.Model, UserMixin):
     lastName = db.Column('last_name', db.String(20), nullable=False)
     email = db.Column('email', db.String(50), nullable=False)
     passKey = db.Column('pass_hash', db.String(60), nullable=False)
-    urole = db.Column(db.Integer, default=1)
 
     def __init__(self, firstName, lastName, email, passKey):
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.passKey = passKey
-
-    def get_id(self):
-        return self.id
-
-    def get_firstName(self):
-        return self.firstName
-
-    def get_lastName(self):
-        return self.lastName
-
-    def get_email(self):
-        return self.email
-
-    def get_role(self):
-        return self.urole
 
     def __repr__(self):
         return f"Administrator('{self.id}', '{self.firstName}', '{self.lastName}',"\
@@ -110,24 +67,6 @@ class Event(db.Model):
         self.semester = semester
         self.year = year
 
-    def get_eventDate(self):
-        return self.eventDate
-
-    def get_eventName(self):
-        return self.eventName
-
-    def get_attendanceTotal(self):
-        return self.attendanceTotal
-
-    def get_newStudentTotal(self):
-        return self.newStudentTotal
-
-    def get_semester(self):
-        return self.semester
-
-    def get_year(self):
-        return self.year
-
     def __repr__(self):
         return f"Event('{self.id}', '{self.eventDate}', '{self.eventName}',"\
                         f"'{self.semester}', '{self.year}')"
@@ -151,21 +90,15 @@ class Attendance(db.Model):
         self.semester = semester
         self.year = year
 
-    def get_eventID(self):
-        return self.eventID
-
-    def get_studentID(self):
-        return self.studentID
-
-    def get_isNew(self):
-        return self.isNew
-
-    def get_semester(self):
-        return self.semester
-
-    def get_year(self):
-        return self.year
-
     def __repr__(self):
         return f"Attendance('{self.id}', '{self.eventID}', '{self.studentID}',"\
                         f"'{self.isNew}', '{self.semester}', '{self.year}', '{self.date}')"
+
+class SemesterMetaData(db.Model):
+    __tablename__ = 'semester_metadata'
+    id = db.Column('semester_id', db.Integer, primary_key=True, nullable=False)
+    date = Date()
+    semester = db.Column('semester', db.String(6), nullable=False, default=date.season)
+    year = db.Column('year', db.String(4), nullable=False, default=date.year)
+    numEventsOnePoint = db.Column('num_events_one_point', db.Integer, nullable=False, default=10)
+    numEventsOnePoint = db.Column('num_events_one_point', db.Integer, nullable=False, default=10)
