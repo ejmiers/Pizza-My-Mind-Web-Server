@@ -1,6 +1,7 @@
 # Folders and  Specific Files
 pmm_server/__pycache__/
 generateTestDB.py
+testDB.py
 
 # Specific extensions
 *.db
