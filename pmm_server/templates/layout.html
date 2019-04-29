@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='attendancetable.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table.css') }}">
     <meta charset="utf-8">
     {% if title %}
       <title>Pizza My Mind! - {{ title }}</title>
@@ -59,13 +59,28 @@
         </div>
         <div class="col-md-4">
           <div class="content-section">
-            <h3>Stay Up to Date!</h3>
-            <p class='text-muted'>Find more information on Pizza My Mind and other PCSE Events.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Events</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light"></li>
+            {% if current_user.is_authenticated and request.path != '/home' %}
+              <h3>Tool Pannel</h3>
+                <ul class="list-group">
+                    {% if request.path == '/admin-console/start-event' %}
+                      <a li class="list-group-item list-group-item-light active" href="{{url_for('adminConsole_startEvent')}}">Start new event</a>
+                    {% else %}
+                      <a li class="list-group-item list-group-item-light" href="{{url_for('adminConsole_startEvent')}}">Start new event</a>
+                    {% endif %}
+                    <a li class="list-group-item list-group-item-light">Make announcement</a>
+                    <a li class="list-group-item list-group-item-light">Calendar</a>
+                    <a li class="list-group-item list-group-item-light">Create admininstrator</a>
+                    <a li class="list-group-item list-group-item-light">Edit semester details</a>
+                    <a li class="list-group-item list-group-item-light">Import data</a>
+            {% else %}
+              <h3>Stay Up to Date!</h3>
+              <p class='text-muted'>Find more information on Pizza My Mind and other PCSE Events.
+                <ul class="list-group">
+
+                    <a li class="list-group-item list-group-item-light">Events</a>
+                    <a li class="list-group-item list-group-item-light">Announcements</a>
+                    <a li class="list-group-item list-group-item-light">Calendars</a>
+            {% endif %}
               </ul>
             </p>
           </div>
