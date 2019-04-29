@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Event Session: {{ event.eventName }}</h1>
+<p></p>
+<h3>Total Attendance: {{ event.attendanceTotal }}</h3>
+
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Event Setup</legend>
+      <div class="form-group">
+        {{ form.id.label(class="form-control-label") }}
+
+        {% if form.id.errors %}
+          {{ form.id(type=reset, autofocus=true, class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.id.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.id(type=reset, autofocus=true, class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+  </form>
+</div>
+
+{% endblock content %}
