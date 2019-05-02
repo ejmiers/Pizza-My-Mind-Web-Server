@@ -121,8 +121,10 @@ def adminConsole_eventSession(event_url):
     form = IDReaderForm()
     if form.validate_on_submit():
         id = form.id.data
-        if id.startswith('20'):
+        if id.startswith('2000'):
             id = id[2:]
+        elif id.startswith('200'):
+            id = id[1:]
 
         student = Student.query.filter_by(id=id).first()
 
