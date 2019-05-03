@@ -101,4 +101,4 @@ class SemesterMetaData(db.Model):
     semester = db.Column('semester', db.String(6), nullable=False, default=date.season)
     year = db.Column('year', db.String(4), nullable=False, default=date.year)
     numEventsOnePoint = db.Column('num_events_one_point', db.Integer, nullable=False, default=10)
-    numEventsOnePoint = db.Column('num_events_one_point', db.Integer, nullable=False, default=10)
+    numEventsTwoPoints = db.Column('num_events_two_points', db.Integer, nullable=False, default=10)
