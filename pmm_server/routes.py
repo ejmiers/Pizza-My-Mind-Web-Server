@@ -5,7 +5,6 @@ from pmm_server.forms import StudentSignInForm, AdminSignInForm, NewEventForm, I
 from pmm_server.date_models import Date
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
-from datetime import datetime
 
 def login_required(f):
     @wraps(f)
@@ -69,7 +68,14 @@ def adminLogin():
 @app.route("/admin-console", methods=['GET', 'POST'])
 @login_required
 def adminConsole():
-    return render_template('admin.html', title='Admin Console')
+    date = Date()
+    events = Event.query.filter_by(semester=date.season).filter_by(year=date.year).all()
+
+    allSemesterAttendance = 0
+    for event in events:
+        allSemesterAttendance += int(event.attendanceTotal)
+
+    return render_template('admin.html', title='Admin Console', events=events, date=date, attendTotal=allSemesterAttendance)
 
 @app.route("/admin-console/start-event", methods=['GET', 'POST'])
 @login_required
@@ -164,9 +170,4 @@ def adminConsole_eventSession(event_url):
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('home'))
-
-@app.route("/test")
-def test():
-    flash(f'{current_user}  class: {type(current_user)}')
     return redirect(url_for('home'))
