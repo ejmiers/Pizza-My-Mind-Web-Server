@@ -189,7 +189,6 @@ def adminConsole_semesterDetails():
         if form.expirationTime.data:
             semester.timeSurveyExpire = form.expirationTime.data.strftime("%H_%M_%S")
 
-
         if form.onePoint.data or form.twoPoints.data or form.expirationDate.data or form.expirationTime.data:
             db.session.commit()
             flash(f'{date.season}, {date.year} semester details have been updated!', 'success')
