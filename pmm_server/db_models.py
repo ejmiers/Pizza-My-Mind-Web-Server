@@ -102,3 +102,14 @@ class SemesterMetaData(db.Model):
     year = db.Column('year', db.String(4), nullable=False, default=date.year)
     numEventsOnePoint = db.Column('num_events_one_point', db.Integer, nullable=False, default=10)
     numEventsTwoPoints = db.Column('num_events_two_points', db.Integer, nullable=False, default=10)
+    dateSurveyExpire = db.Column('survey_expiration_date', db.String(10), default='null')
+    timeSurveyExpire = db.Column('survey_expiration_time', db.String(10), default='null')
+
+    def __init__(self, semester, year):
+        self.semester = semester
+        self.year = year
+
+    def __repr__(self):
+        return f"Semester('{self.id}', '{self.semester}', '{self.year}',"\
+                        f"'{self.numEventsOnePoint}', '{self.numEventsTwoPoints}',"\
+                        f"'{self.dateSurveyExpire}', '{self.timeSurveyExpire}')"
