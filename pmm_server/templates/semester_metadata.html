@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Edit {{ date.season }}, {{ date.year }} Details</legend>
+      <div class="form-group">
+        {{ form.onePoint.label(class="form-control-label") }}
+
+        {% if form.onePoint.errors %}
+          {{ form.onePoint(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.onePoint.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.onePoint(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.twoPoints.label(class="form-control-label") }}
+
+        {% if form.twoPoints.errors %}
+          {{ form.twoPoints(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.twoPoints.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.twoPoints(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.expirationDate.label(class="form-control-label") }}
+
+        {% if form.expirationDate.errors %}
+          {{ form.expirationDate(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.expirationDate.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.expirationDate(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.expirationTime.label(class="form-control-label") }}
+
+        {% if form.expirationTime.errors %}
+          {{ form.expirationTime(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.expirationTime.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.expirationTime(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.updateSemester(class="btn btn-outline-info")}}
+    </div>
+  </form>
+</div>
+{% endblock content %}
