@@ -1,4 +1,45 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>Admin Console</h1>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bar_graph.css') }}">
+
+<h1>Admin Console</h1>
+
+<br style='line-height:20px'>
+<h3>{{ date.season }}, {{ date.year }} Attendance Totals (At a Glance)</h2>
+{% for event in events %}
+  {% set width = (event.attendanceTotal / attendTotal) * 100 %}
+  <div class="graph event" style='color:white; width:{{width}}%; text-align:right; padding:5px'>
+    {{ event.attendanceTotal }}
+  </div>
+  <p>{{ event.eventName }}</p>
+{% endfor %}
+
+<br style='line-height:50px'>
+<table>
+<tr>
+  <th>Event Name</th>
+  <th>Total Attendance</th>
+  <th>Date</th>
+  <th>Results</th>
+  <th>Edit Event Details</th>
+</tr>
+{% for event in events %}
+  <tr>
+      <td>{{ event.eventName }}</td>
+      <td>{{ event.attendanceTotal }}</td>
+      <td>{{ event.eventDate }}</td>
+      <td title='click to download results'>
+        <a href='http://www.google.com'>
+          <img src="{{ url_for('static', filename='download.png') }}" alt="dowlnload" style='width:20px;height:20px;'>
+        </a>
+      </td>
+      <td title='click to edit event details'>edit</td>
+  </tr>
+{% endfor %}
+</table>
+
+<br style='line-height:5px'>
+<a href='http://www.google.com'><h6>Click here to download master spreadsheet for this semester</h6></a>
+
 {% endblock content %}
