@@ -1,0 +1,11 @@
+/* Make sure that padding behaves as expected */
+* {box-sizing:border-box}
+
+.graph li {
+  text-align: right; /* Right-align text */
+  padding: 10px; /* Add some padding */
+  color: white; /* White text color */
+  width: 0%
+}
+
+.event {background-color: #2196F3;} /* Blue */
