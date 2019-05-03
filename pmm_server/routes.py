@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect
 from pmm_server import app, db, bcrypt
-from pmm_server.db_models import Student, Administrator, Event, Attendance
-from pmm_server.forms import StudentSignInForm, AdminSignInForm, NewEventForm, IDReaderForm
+from pmm_server.db_models import Student, Administrator, Event, Attendance, SemesterMetaData
+from pmm_server.forms import StudentSignInForm, AdminSignInForm, NewEventForm, IDReaderForm, SemesterMetaDataForm
 from pmm_server.date_models import Date
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
@@ -38,7 +38,7 @@ def attendance():
                                           filter_by(year=date.year).all()
             events = Event.query.filter_by(semester=date.season).\
                                  filter_by(year=date.year).all()
-                                 
+
             return render_template('student-console.html', title='Student Attendance', date=date, student=student, attendance=attendance, events=events)
         else:
             flash(f'The user \'{form.studentID.data}\' does not exist.\
@@ -164,6 +164,37 @@ def adminConsole_eventSession(event_url):
             return redirect(url_for('adminConsole_eventSession', event_url=event.id))
 
     return render_template('event_session.html', title='event-session', form=form, event=event)
+
+@app.route("/admin-console/semester-details", methods=['GET', 'POST'])
+@login_required
+def adminConsole_semesterDetails():
+    date = Date()
+    form = SemesterMetaDataForm()
+
+    if form.validate_on_submit():
+        semester = SemesterMetaData.query.filter_by(semester=date.season).filter_by(year=date.year).first()
+        print(semester)
+
+        if not semester:
+            semester = SemesterMetaData(semester=date.season, year=date.year)
+            db.session.add(semester)
+            db.session.commit()
+
+        if form.onePoint.data:
+            semester.numEventsOnePoint = form.onePoint.data
+        if form.twoPoints.data:
+            semester.numEventsTwoPoints = form.twoPoints.data
+        if form.expirationDate.data:
+            semester.dateSurveyExpire = form.expirationDate.data.strftime("%m_%d_%Y")
+        if form.expirationTime.data:
+            semester.timeSurveyExpire = form.expirationTime.data.strftime("%H_%M_%S")
+
+
+        if form.onePoint.data or form.twoPoints.data or form.expirationDate.data or form.expirationTime.data:
+            db.session.commit()
+            flash(f'{date.season}, {date.year} semester details have been updated!', 'success')
+
+    return render_template('semester_metadata.html', title='edit-semester-details', form=form, date=date)
 
 @app.route("/logout")
 def logout():
