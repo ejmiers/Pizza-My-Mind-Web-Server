@@ -18,6 +18,5 @@ class NewEventForm(FlaskForm):
     attendance = SelectField('Use Attendance From', validators=[DataRequired()])
     startNew = SubmitField('Start Event')
 
-
 class IDReaderForm(FlaskForm):
     id = StringField('Student ID', validators=[DataRequired()])
