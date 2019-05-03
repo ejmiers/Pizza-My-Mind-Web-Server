@@ -33,14 +33,12 @@ def attendance():
         student = Student.query.filter_by(id=form.studentID.data).first()
         if student:
             date = Date()
-            print(date)
             attendance = Attendance.query.filter_by(studentID=form.studentID.data).\
                                           filter_by(semester=date.season).\
                                           filter_by(year=date.year).all()
             events = Event.query.filter_by(semester=date.season).\
                                  filter_by(year=date.year).all()
-            print(attendance)
-            print(events)
+                                 
             return render_template('student-console.html', title='Student Attendance', date=date, student=student, attendance=attendance, events=events)
         else:
             flash(f'The user \'{form.studentID.data}\' does not exist.\
