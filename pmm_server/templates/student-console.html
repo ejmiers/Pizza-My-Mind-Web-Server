@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table_student.css') }}">
   <h1> Welcome {{ student.firstName }}! Here is your {{ date.season }}, {{date.year}} attendance history.</h1>
   <p></p>
   <table>
@@ -19,7 +20,5 @@
   {% endfor %}
   </table>
   <p></p>
-  <h4>Events Attended: {{ attendance|length }} &emsp;&emsp;&emsp;&emsp;
-      &emsp;&emsp; Points Earned: 0
-  </h4>
+  <p class="text-center">You have been to {{ attendance|length }} events. Attend 5 more events to start earning points.</p>
 {% endblock content %}
