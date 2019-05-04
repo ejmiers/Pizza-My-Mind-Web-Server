@@ -1,11 +1,14 @@
 from flask import render_template, url_for, flash, redirect
 from pmm_server import app, db, bcrypt
 from pmm_server.db_models import Student, Administrator, Event, Attendance, SemesterMetaData
-from pmm_server.forms import StudentSignInForm, AdminSignInForm, NewEventForm, IDReaderForm, SemesterMetaDataForm
+from pmm_server.forms import (StudentSignInForm, AdminSignInForm,
+                              NewEventForm, IDReaderForm, SemesterMetaDataForm)
 from pmm_server.date_models import Date
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
 
+# Custom decorator that checks to see if a user has been authenticated as an admin
+# Redirects to admin login page
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -39,14 +42,29 @@ def attendance():
             events = Event.query.filter_by(semester=date.season).\
                                  filter_by(year=date.year).all()
 
-            return render_template('student-console.html', title='Student Attendance', date=date, student=student, attendance=attendance, events=events)
+            semester = SemesterMetaData.query.filter_by(semester=date.season).\
+                                              filter_by(year=date.year).first()
+
+            # Check to see if student qualifies for any points
+            if (semester == None):
+                pointsQualified = (None, None)
+            elif (len(attendance) >= semester.numEventsTwoPoints):
+                pointsQualified = (0,2)
+            elif (len(attendance) >= semester.numEventsOnePoint):
+                pointsQualified = (0,1)
+            else:
+                pointsQualified = (semester.numEventsOnePoint - len(attendance), 0)
+
+
+            return render_template('student-console.html', title='Student Attendance', date=date, student=student,
+                                    pointsQualified=pointsQualified, attendance=attendance, events=events)
         else:
             flash(f'The user \'{form.studentID.data}\' does not exist.\
                     Please contact your department administrator.', 'danger')
     return render_template('student-signin.html', title='Login', form=form)
 
 # Handles requests to login to admin console
-# Returns student-console page on successful validation of Student ID
+# Returns admin-console page on successful login authentication
 @app.route("/admin", methods=['GET', 'POST'])
 def adminLogin():
     form = AdminSignInForm()
@@ -63,18 +81,24 @@ def adminLogin():
                     Please contact your department administrator.', 'danger')
     return render_template('admin-signin.html', title='Admin Console Login', form=form)
 
+# Main route for the admin console
+# User must be logged in to view this page
 @app.route("/admin-console", methods=['GET', 'POST'])
 @login_required
 def adminConsole():
     date = Date()
     events = Event.query.filter_by(semester=date.season).filter_by(year=date.year).all()
 
+    # Attendance Total is used to generate percentage style chart on admin-console page
     allSemesterAttendance = 0
     for event in events:
         allSemesterAttendance += int(event.attendanceTotal)
 
     return render_template('admin.html', title='Admin Console', events=events, date=date, attendTotal=allSemesterAttendance)
 
+# Route within the admin console used to start PMM events
+# Redirects to a new event session upon validation of NewEventForm
+# User must be logged in to view this page
 @app.route("/admin-console/start-event", methods=['GET', 'POST'])
 @login_required
 def adminConsole_startEvent():
@@ -86,6 +110,7 @@ def adminConsole_startEvent():
     form.attendance.choices = eventChoices
 
     if form.validate_on_submit():
+        # Check to see if user chose to create a new pmm event with preexisting attendance data
         if form.attendance.data != 'none':
             eventAttendance = Event.query.filter_by(id=form.attendance.data)\
                                          .filter_by(semester=date.season)\
@@ -101,6 +126,8 @@ def adminConsole_startEvent():
                 db.session.add(newEntry)
 
             db.session.commit()
+
+        # Create new pmm event with blank attendance record
         else:
             event = Event(eventName=form.eventName.data, attendanceTotal=0,
                           newStudentTotal=0, semester=date.season, year=date.year)
@@ -112,6 +139,9 @@ def adminConsole_startEvent():
 
     return render_template('create_event.html', title='start new event', admin=current_user, form=form)
 
+# Route for a new event session
+# Redirects back to itself upon scanning a student ID
+# User must be logged in to view this page
 @app.route("/admin-console/event/eventID='<event_url>'", methods=['GET', 'POST'])
 @login_required
 def adminConsole_eventSession(event_url):
@@ -125,6 +155,8 @@ def adminConsole_eventSession(event_url):
     form = IDReaderForm()
     if form.validate_on_submit():
         id = form.id.data
+
+        # Trim scanned barcode ID to 00xxxxxx ID format
         if id.startswith('2000'):
             id = id[2:]
         elif id.startswith('200'):
@@ -132,9 +164,12 @@ def adminConsole_eventSession(event_url):
 
         student = Student.query.filter_by(id=id).first()
 
+        # Check that the student hasn't already been registered for the event
         if (not Attendance.query.filter_by(eventID=event.id).filter_by(studentID=id).first()):
             event.attendanceTotal += 1
 
+            # If a student is new, create an entry in the database and generate an attendance record
+            # Otherwise just generate the attendance record
             if student == None:
                 isNew = True
             else:
@@ -165,6 +200,8 @@ def adminConsole_eventSession(event_url):
 
     return render_template('event_session.html', title='event-session', form=form, event=event)
 
+# Route that allows an admin to update semester parameters
+# User must be logged in to view this page
 @app.route("/admin-console/semester-details", methods=['GET', 'POST'])
 @login_required
 def adminConsole_semesterDetails():
@@ -173,13 +210,14 @@ def adminConsole_semesterDetails():
 
     if form.validate_on_submit():
         semester = SemesterMetaData.query.filter_by(semester=date.season).filter_by(year=date.year).first()
-        print(semester)
 
+        # Current Semester not an entry in the database, create a new semester entry
         if not semester:
             semester = SemesterMetaData(semester=date.season, year=date.year)
             db.session.add(semester)
             db.session.commit()
 
+        # Update semester fields for number of points and time/date survey expiration
         if form.onePoint.data:
             semester.numEventsOnePoint = form.onePoint.data
         if form.twoPoints.data:
@@ -189,12 +227,19 @@ def adminConsole_semesterDetails():
         if form.expirationTime.data:
             semester.timeSurveyExpire = form.expirationTime.data.strftime("%H_%M_%S")
 
+        # if a change has been made, commit the data
         if form.onePoint.data or form.twoPoints.data or form.expirationDate.data or form.expirationTime.data:
             db.session.commit()
             flash(f'{date.season}, {date.year} semester details have been updated!', 'success')
 
     return render_template('semester_metadata.html', title='edit-semester-details', form=form, date=date)
 
+# @app.route("/admin-console/edit-admin", methods=['GET', 'POST'])
+# @login_required
+# def adminConsole_editAdmin():
+
+# logout signed-in admins
+# Redirect back to the home page
 @app.route("/logout")
 def logout():
     logout_user()
