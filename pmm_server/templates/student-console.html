@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table_student.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table.css') }}">
   <h1> Welcome {{ student.firstName }}! Here is your {{ date.season }}, {{date.year}} attendance history.</h1>
-  <p></p>
+  <br style='line-height:20px'>
   <table>
   <tr>
     <th>Event Name</th>
@@ -19,6 +19,23 @@
     </tr>
   {% endfor %}
   </table>
-  <p></p>
-  <p class="text-center">You have been to {{ attendance|length }} events. Attend 5 more events to start earning points.</p>
+  <br style='line-height:20px'>
+
+  {% if pointsQualified[0] == None %}
+    <p class="text-center">You have been to {{ attendance|length }} events. Please hang tight while we decide the point requirements for this semester.</p>
+  {% elif pointsQualified[0] == 0 %}
+    {% if pointsQualified[1] == 1 %}
+      <p class="text-center">You have been to {{ attendance|length }} events, earning you {{ pointsQualified[1] }} point.</p>
+    {% elif pointsQualified[1] == 2 %}
+      <p class="text-center">You have been to {{ attendance|length }} events, earning {{ pointsQualified[1] }} points.</p>
+    {% endif %}
+
+  {% else %}
+    {% if pointsQualified[0] == 1 %}
+      <p class="text-center">You have been to {{ attendance|length }} events. Attend {{ pointsQualified[0] }} more event to start earning points.</p>
+    {% else %}
+      <p class="text-center">You have been to {{ attendance|length }} events. Attend {{ pointsQualified[0] }} more events to start earning points.</p>
+    {% endif %}
+  {% endif %}
+
 {% endblock content %}
