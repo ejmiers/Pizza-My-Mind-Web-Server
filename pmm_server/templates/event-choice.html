@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Event Setup Choices</h1>
+  <br style='line-height:40px'>
+
+  <a href="{{ url_for('adminConsole_startEvent')}}">
+    <h5>
+      <img src="{{ url_for('static', filename='next.png') }}" alt="Choice 1: " style='width:20px;height:20px;'>
+      Start a new event
+    </h5>
+  </a>
+
+  <br style='line-height:5px'>
+
+  <a href="{{ url_for('adminConsole_openExistingEvent')}}">
+    <h5>
+        <img src="{{ url_for('static', filename='next.png') }}" alt="Choice 2: " style='width:20px;height:20px;'>
+        Re-open an already existing event
+      </h5>
+  </a>
+
+{% endblock content %}
