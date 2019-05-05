@@ -1,12 +1,14 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, send_file
 from pmm_server import app, db, bcrypt
 from pmm_server.db_models import Student, Administrator, Event, Attendance, SemesterMetaData
 from pmm_server.forms import (StudentSignInForm, AdminSignInForm,
                               NewEventForm, IDReaderForm, SemesterMetaDataForm,
                               LoadEventForm)
 from pmm_server.date_models import Date
+from pmm_server.spreadsheet_models import EventSpreadsheet
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
+import os
 
 # Custom decorator that checks to see if a user has been authenticated as an admin
 # Redirects to admin login page
@@ -18,6 +20,7 @@ def login_required(f):
             return redirect(url_for('adminLogin'))
         return f(*args, **kwargs)
     return decorated_function
+
 
 @app.route("/")
 @app.route("/home")
@@ -92,10 +95,15 @@ def adminConsole():
 
     # Attendance Total is used to generate percentage style chart on admin-console page
     allSemesterAttendance = 0
+    eventsWithFilePath = []
     for event in events:
         allSemesterAttendance += int(event.attendanceTotal)
+        spreadsheet = EventSpreadsheet(event.id)
 
-    return render_template('admin.html', title='Admin Console', events=events, date=date, attendTotal=allSemesterAttendance)
+        eventWithFilePath = (event, ('event',spreadsheet.filename))
+        eventsWithFilePath.append(eventWithFilePath)
+
+    return render_template('admin.html', title='Admin Console', events=eventsWithFilePath, date=date, attendTotal=allSemesterAttendance)
 
 # Routes to event setup choice page
 # Will redirect to new event setup page or re-open event page depending on link chosen
@@ -267,6 +275,21 @@ def adminConsole_semesterDetails():
 # @app.route("/admin-console/edit-admin", methods=['GET', 'POST'])
 # @login_required
 # def adminConsole_editAdmin():
+
+@app.route("/admin-console/download/file='<file>'", methods=['GET', 'POST'])
+@login_required
+def downloadFile(file):
+    print('file: ' + file)
+    print("first element: " + file[2:7])
+    if file[2:7] == 'event':
+        print("Instance: Event")
+        print("filename: " + file[11:len(file)-2])
+        path = os.getcwd() + '/pmm_server/spreadsheets/events/' + file[11:len(file)-2]
+        return send_file(path, as_attachment=True)
+
+    flash(f'ERROR: Cannot download file', 'danger')
+
+    return redirect(url_for('adminConsole'))
 
 # logout signed-in admins
 # Redirect back to the home page
