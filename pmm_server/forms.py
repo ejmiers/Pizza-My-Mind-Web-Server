@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from pmm_server.date_models import Date
-from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField  
+from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField
 from wtforms.fields.html5 import DateField, TimeField
 from wtforms.validators import DataRequired, Email, Optional
 
@@ -19,6 +19,10 @@ class NewEventForm(FlaskForm):
     attendance = SelectField('Use Attendance From', validators=[DataRequired()])
     startNew = SubmitField('Start Event')
 
+class LoadEventForm(FlaskForm):
+    chooseEvent = SelectField('Open Event', validators=[DataRequired()])
+    loadEvent = SubmitField('Re-open Event')
+
 class IDReaderForm(FlaskForm):
     id = StringField('Student ID', validators=[DataRequired()])
 
@@ -29,3 +33,9 @@ class SemesterMetaDataForm(FlaskForm):
     expirationDate = DateField('Survey expiration date', default=date.currentDay, validators=[Optional()])
     expirationTime = TimeField('Survey expiration time', default=date.currentTime, validators=[Optional()])
     updateSemester = SubmitField('Update Semester')
+
+# class AdminModificationForm(FlaskForm):
+#     admin = SelectField('Modify Administrator details for', validators=[DataRequired()])
+#
+#     if admin.data == 'new':
+#         firstName = StringField
