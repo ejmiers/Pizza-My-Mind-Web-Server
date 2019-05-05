@@ -6,13 +6,13 @@
 <h1>Admin Console</h1>
 
 <br style='line-height:20px'>
-<h3>{{ date.season }}, {{ date.year }} Attendance Totals (At a Glance)</h2>
+<h3>{{ date.season }}, {{ date.year }} Attendance Totals (At a Glance)</h3>
 {% for event in events %}
-  {% set width = (event.attendanceTotal / attendTotal) * 100 %}
+  {% set width = (event[0].attendanceTotal / attendTotal) * 100 %}
   <div class="graph event" title = "{{ event.attendanceTotal }} students attended" style='color:white; width:{{width}}%; text-align:right; padding:5px'>
-    {{ event.attendanceTotal }}
+    {{ event[0].attendanceTotal }}
   </div>
-  <p>{{ event.eventName }}</p>
+  <p>{{ event[0].eventName }}</p>
 {% endfor %}
 
 <br style='line-height:50px'>
@@ -26,11 +26,11 @@
 </tr>
 {% for event in events %}
   <tr>
-      <td>{{ event.eventName }}</td>
-      <td>{{ event.attendanceTotal }}</td>
-      <td>{{ event.eventDate.replace('_', '/') }}</td>
+      <td>{{ event[0].eventName }}</td>
+      <td>{{ event[0].attendanceTotal }}</td>
+      <td>{{ event[0].eventDate.replace('_', '/') }}</td>
       <td title='click to download results'>
-        <a href='http://www.google.com'>
+        <a href="{{ url_for('downloadFile', file=event[1]) }}">
           <img src="{{ url_for('static', filename='download.png') }}" alt="dowlnload" style='width:20px;height:20px;'>
         </a>
       </td>
