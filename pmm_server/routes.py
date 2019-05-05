@@ -2,7 +2,8 @@ from flask import render_template, url_for, flash, redirect
 from pmm_server import app, db, bcrypt
 from pmm_server.db_models import Student, Administrator, Event, Attendance, SemesterMetaData
 from pmm_server.forms import (StudentSignInForm, AdminSignInForm,
-                              NewEventForm, IDReaderForm, SemesterMetaDataForm)
+                              NewEventForm, IDReaderForm, SemesterMetaDataForm,
+                              LoadEventForm)
 from pmm_server.date_models import Date
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
@@ -96,6 +97,13 @@ def adminConsole():
 
     return render_template('admin.html', title='Admin Console', events=events, date=date, attendTotal=allSemesterAttendance)
 
+# Routes to event setup choice page
+# Will redirect to new event setup page or re-open event page depending on link chosen
+@app.route("/admin-console/create-or-repoen-event")
+@login_required
+def adminConsole_createOrReopenEvent():
+    return render_template('event-choice.html', title='event setup choice')
+
 # Route within the admin console used to start PMM events
 # Redirects to a new event session upon validation of NewEventForm
 # User must be logged in to view this page
@@ -137,7 +145,29 @@ def adminConsole_startEvent():
         pageTitle = "event: " + str(event.eventName)
         return redirect(url_for('adminConsole_eventSession', event_url=event.id))
 
-    return render_template('create_event.html', title='start new event', admin=current_user, form=form)
+    return render_template('create_event.html', title='start new event', form=form)
+
+# Route within the admin console used to start PMM events
+# Redirects to a new event session upon validation of NewEventForm
+# User must be logged in to view this page
+@app.route("/admin-console/reopen-event", methods=['GET', 'POST'])
+@login_required
+def adminConsole_openExistingEvent():
+    date = Date()
+    eventChoices = [(str(g.id), g.eventName) for g in Event.query.filter_by(semester=date.season).filter_by(year=date.year).all()]
+
+    form = LoadEventForm()
+    form.chooseEvent.choices = eventChoices
+
+    if form.validate_on_submit():
+        eventChosen = Event.query.filter_by(id=form.chooseEvent.data)\
+                                 .filter_by(semester=date.season)\
+                                 .filter_by(year=date.year).first()
+
+        pageTitle = "event: " + str(eventChosen.eventName)
+        return redirect(url_for('adminConsole_eventSession', event_url=eventChosen.id))
+
+    return render_template('reload_event.html', title='Re-open existing event', form=form)
 
 # Route for a new event session
 # Redirects back to itself upon scanning a student ID
