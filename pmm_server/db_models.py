@@ -69,7 +69,7 @@ class Event(db.Model):
 
     def __repr__(self):
         return f"Event('{self.id}', '{self.eventDate}', '{self.eventName}',"\
-                        f"'{self.semester}', '{self.year}')"
+                        f"'{self.attendanceTotal}','{self.semester}', '{self.year}')"
 
 class Attendance(db.Model):
     __tablename__ = 'attendance'
