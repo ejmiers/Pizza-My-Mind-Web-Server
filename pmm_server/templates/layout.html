@@ -62,9 +62,9 @@
               <h3>Tool Pannel</h3>
                 <ul class="list-group">
                     {% if request.path == '/admin-console/start-event' %}
-                      <a li class="list-group-item list-group-item-light active" href="{{url_for('adminConsole_startEvent')}}">Start new event</a>
+                      <a li class="list-group-item list-group-item-light active" href="{{url_for('adminConsole_createOrReopenEvent')}}">Create or re-open event</a>
                     {% else %}
-                      <a li class="list-group-item list-group-item-light" href="{{url_for('adminConsole_startEvent')}}">Start new event</a>
+                      <a li class="list-group-item list-group-item-light" href="{{url_for('adminConsole_createOrReopenEvent')}}">Create or re-open event</a>
                     {% endif %}
                     <a li class="list-group-item list-group-item-light">Make announcement</a>
                     <a li class="list-group-item list-group-item-light">Calendar</a>
