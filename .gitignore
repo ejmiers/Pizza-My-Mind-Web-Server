@@ -5,3 +5,4 @@ testDB.py
 
 # Specific extensions
 *.db
+*.csv
