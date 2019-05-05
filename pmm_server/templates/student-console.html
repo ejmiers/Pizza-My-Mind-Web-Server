@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table.css') }}">
-  <h1> Welcome {{ student.firstName }}! Here is your {{ date.season }}, {{date.year}} attendance history.</h1>
+  <h1> Welcome {{ student.firstName }}! </h1>
+  <h2>Here is your {{ date.season }}, {{date.year}} attendance history.</h2>
   <br style='line-height:20px'>
   <table>
   <tr>
@@ -13,7 +14,7 @@
       {% for event in events %}
         {% if event.id == entry.eventID %}
           <td>{{ event.eventName }}</td>
-          <td>{{ entry.date }}</td>
+          <td>{{ entry.date.replace('_', '/') }}</td>
         {% endif %}
       {% endfor %}
     </tr>
