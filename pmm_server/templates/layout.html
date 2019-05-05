@@ -59,7 +59,7 @@
         <div class="col-md-4">
           <div class="content-section">
             {% if current_user.is_authenticated and request.path != '/home' %}
-              <h3>Tool Pannel</h3>
+              <h3>Tool Panel</h3>
                 <ul class="list-group">
                     {% if request.path == '/admin-console/start-event' %}
                       <a li class="list-group-item list-group-item-light active" href="{{url_for('adminConsole_createOrReopenEvent')}}">Create or re-open event</a>
