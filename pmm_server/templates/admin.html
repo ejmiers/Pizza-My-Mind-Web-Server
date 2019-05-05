@@ -9,7 +9,7 @@
 <h3>{{ date.season }}, {{ date.year }} Attendance Totals (At a Glance)</h2>
 {% for event in events %}
   {% set width = (event.attendanceTotal / attendTotal) * 100 %}
-  <div class="graph event" style='color:white; width:{{width}}%; text-align:right; padding:5px'>
+  <div class="graph event" title = "{{ event.attendanceTotal }} students attended" style='color:white; width:{{width}}%; text-align:right; padding:5px'>
     {{ event.attendanceTotal }}
   </div>
   <p>{{ event.eventName }}</p>
@@ -28,13 +28,15 @@
   <tr>
       <td>{{ event.eventName }}</td>
       <td>{{ event.attendanceTotal }}</td>
-      <td>{{ event.eventDate }}</td>
+      <td>{{ event.eventDate.replace('_', '/') }}</td>
       <td title='click to download results'>
         <a href='http://www.google.com'>
           <img src="{{ url_for('static', filename='download.png') }}" alt="dowlnload" style='width:20px;height:20px;'>
         </a>
       </td>
-      <td title='click to edit event details'>edit</td>
+      <td title='click to edit event details'>
+        <a href="{{ url_for('adminConsole_eventSession', event_url=event.id) }}">edit</a>
+      </td>
   </tr>
 {% endfor %}
 </table>
