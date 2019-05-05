@@ -35,7 +35,7 @@
         </a>
       </td>
       <td title='click to edit event details'>
-        <a href="{{ url_for('adminConsole_eventSession', event_url=event.id) }}">edit</a>
+        <a href="{{ url_for('adminConsole_eventSession', event_url=event[0].id) }}">edit</a>
       </td>
   </tr>
 {% endfor %}
