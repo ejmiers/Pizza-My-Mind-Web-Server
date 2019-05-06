@@ -42,6 +42,8 @@
 </table>
 
 <br style='line-height:5px'>
-<a href='http://www.google.com'><h6>Click here to download master spreadsheet for this semester</h6></a>
+<a href="{{ url_for('downloadFile', file=masterSpreadsheet) }}">
+  <h6>Click here to download master spreadsheet for this semester</h6>
+</a>
 
 {% endblock content %}
