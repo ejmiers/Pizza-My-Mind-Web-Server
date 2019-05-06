@@ -5,7 +5,7 @@ from pmm_server.forms import (StudentSignInForm, AdminSignInForm,
                               NewEventForm, IDReaderForm, SemesterMetaDataForm,
                               LoadEventForm)
 from pmm_server.date_models import Date
-from pmm_server.spreadsheet_models import EventSpreadsheet
+from pmm_server.spreadsheet_models import EventSpreadsheet, MasterSpreadsheet
 from flask_login import login_user, current_user, logout_user
 from functools import wraps
 import os
@@ -93,6 +93,9 @@ def adminConsole():
     date = Date()
     events = Event.query.filter_by(semester=date.season).filter_by(year=date.year).all()
 
+    generateMasterSpreadsheet = MasterSpreadsheet()
+    masterSpreadsheet = ('master', generateMasterSpreadsheet.filename)
+
     # Attendance Total is used to generate percentage style chart on admin-console page
     allSemesterAttendance = 0
     eventsWithFilePath = []
@@ -103,7 +106,10 @@ def adminConsole():
         eventWithFilePath = (event, ('event',spreadsheet.filename))
         eventsWithFilePath.append(eventWithFilePath)
 
-    return render_template('admin.html', title='Admin Console', events=eventsWithFilePath, date=date, attendTotal=allSemesterAttendance)
+
+
+    return render_template('admin.html', title='Admin Console', events=eventsWithFilePath, date=date,
+                            attendTotal=allSemesterAttendance, masterSpreadsheet=masterSpreadsheet)
 
 # Routes to event setup choice page
 # Will redirect to new event setup page or re-open event page depending on link chosen
@@ -279,13 +285,14 @@ def adminConsole_semesterDetails():
 @app.route("/admin-console/download/file='<file>'", methods=['GET', 'POST'])
 @login_required
 def downloadFile(file):
-    print('file: ' + file)
-    print("first element: " + file[2:7])
+
     if file[2:7] == 'event':
-        print("Instance: Event")
-        print("filename: " + file[11:len(file)-2])
         path = os.getcwd() + '/pmm_server/spreadsheets/events/' + file[11:len(file)-2]
-        return send_file(path, as_attachment=True)
+        return send_file(path, as_attachment=True, cache_timeout=0)
+
+    elif file[2:8] == 'master':
+        path = os.getcwd() + '/pmm_server/spreadsheets/master/' + file[12:len(file)-2]
+        return send_file(path, as_attachment=True, cache_timeout=0)
 
     flash(f'ERROR: Cannot download file', 'danger')
 
