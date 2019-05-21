@@ -191,6 +191,7 @@ def adminConsole_openExistingEvent():
 def adminConsole_eventSession(event_url):
     date = Date()
     event = Event.query.filter_by(id=event_url).first()
+    attendance = Attendance.query.filter_by(eventID=event.id).all()
 
     if not event:
         flash(f'Cannot open event session for event id: {event_url}', 'danger')
@@ -242,7 +243,7 @@ def adminConsole_eventSession(event_url):
                 flash(f'{student.firstName} {student.lastName} has already checked in!', 'danger')
             return redirect(url_for('adminConsole_eventSession', event_url=event.id))
 
-    return render_template('event_session.html', title='event-session', form=form, event=event)
+    return render_template('event_session.html', title='event-session', form=form, event=event, attendance=attendance)
 
 # Route that allows an admin to update semester parameters
 # User must be logged in to view this page
@@ -297,6 +298,22 @@ def downloadFile(file):
     flash(f'ERROR: Cannot download file', 'danger')
 
     return redirect(url_for('adminConsole'))
+
+
+@app.route("/admin-console/event/eventID='<event_url>/deleteID=<student_id>'", methods=['GET', 'POST'])
+@login_required
+def eventCheckout(event_url, student_id):
+
+    event = Event.query.filter_by(id=event_url).first()
+    attendanceRecord = Attendance.query.filter_by(eventID=event_url).filter_by(studentID=student_id).first()
+
+    event.attendanceTotal -= 1
+    db.session.delete(attendanceRecord)
+    db.session.commit()
+
+    flash(f'{student_id} has been checked out of this event', 'warning')
+
+    return redirect(url_for('adminConsole_eventSession', event_url=event_url))
 
 # logout signed-in admins
 # Redirect back to the home page
