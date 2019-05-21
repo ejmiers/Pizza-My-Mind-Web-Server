@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='table.css') }}">
+
 <h1>Event Session: {{ event.eventName }}</h1>
 <br style='line-height:20px'>
 <h3>Total Attendance: {{ event.attendanceTotal }}</h3>
@@ -25,5 +27,25 @@
       </div>
   </form>
 </div>
+
+{% if attendance|length > 0 %}
+  <br style='line-height:50px'>
+  <table>
+  <tr>
+    <th>Student ID</th>
+    <th>Checkout</th>
+  </tr>
+  {% for student in attendance %}
+    <tr>
+        <td>{{ student.studentID }}</td>
+        <td title='click to check student out of this event'>
+          <a href="{{ url_for('eventCheckout', event_url=event.id, student_id=student.studentID) }}">
+            <img src="{{ url_for('static', filename='door.png') }}" alt="checkout" style='width:20px;height:20px;'>
+          </a>
+        </td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endif %}
 
 {% endblock content %}
