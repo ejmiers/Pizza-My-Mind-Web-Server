@@ -113,3 +113,45 @@ class SemesterMetaData(db.Model):
         return f"Semester('{self.id}', '{self.semester}', '{self.year}',"\
                         f"'{self.numEventsOnePoint}', '{self.numEventsTwoPoints}',"\
                         f"'{self.dateSurveyExpire}', '{self.timeSurveyExpire}')"
+
+class CourseData(db.Model):
+    __tablename__ = 'course_data'
+    date = Date()
+    id = db.Column('course_id', db.Integer, primary_key=True, nullable=False)
+    semester = db.Column('semester', db.String(6), nullable=False, default=date.season)
+    year = db.Column('year', db.String(4), nullable=False, default=date.year)
+    crn = db.Column('crn', db.Integer, nullable=False)
+    course = db.Column('course', db.String(10), nullable=False)
+    section = db.Column('section', db.String(5), nullable=False)
+    title = db.Column('title', db.String(100), nullable=False)
+    hours = db.Column('hours', db.String(3), nullable=False)
+    llc = db.Column('area_of_llc', db.String(10))
+    type = db.Column('type', db.String(3), nullable=False)
+    days = db.Column('days', db.String(3))
+    time = db.Column('time', db.String(9))
+    location = db.Column('location', db.String(15), nullable=False)
+    instructor = db.Column('instructor', db.String(50), nullable=False)
+    seats = db.Column('seats_still_available', db.Integer, nullable=False)
+    status = db.Column('status', db.String(6), nullable=False)
+
+    def __init__(self, crn, course, section, title, hours, llc, type, days, time,
+                 location, instructor, seats, status):
+        self.crn = crn
+        self.course = course
+        self.section = section
+        self.title = title
+        self.hours = hours
+        self.llc = llc
+        self.type = type
+        self.days = days
+        self.time = time
+        self.location = location
+        self.instructor = instructor
+        self.seats = seats
+        self.status = status
+
+    def __repr__(self):
+        return f"Course('{self.id}', '{self.semester}', '{self.year}', '{self.crn}',"\
+                      f"'{self.course}', '{self.title}', '{self.hours}', '{self.llc}',"\
+                      f"'{self.type}', '{self.days}', '{self.time}', '{self.location}',"\
+                      f"'{self.instructor}', '{self.seats}', '{self.status}')"
